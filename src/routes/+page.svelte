@@ -1,19 +1,21 @@
-<h1>Notifications</h1>
+<h1><a href="/">Notifications</a></h1>
 
 {#if typeof window !== 'undefined' && 'Notification' in window}
-	{#await Notification.requestPermission()}
-		<p>Requesting permission to send notifications</p>
-	{:then permission}
+	{#await requestPermission()}
+		<p>Requesting permission to send notifications...</p>
+	{:then}
 		{#if permission === 'granted'}
+			<p>Notifications are enabled.</p>
 			<button
-				on:click={() => {
+				onclick={() => {
 					new Notification('Hello world!')
 				}}
 			>
-				Notify
+				Send notification
 			</button>
 		{:else}
-			<p>Notifications are disabled</p>
+			<p>Notifications are disabled.</p>
+			<button onclick={requestPermission}>Enable notifications</button>
 		{/if}
 	{/await}
 {:else}
@@ -21,4 +23,10 @@
 {/if}
 
 <script lang="ts">
+	let permission = $state<NotificationPermission>('default')
+
+	async function requestPermission() {
+		const result = await Notification.requestPermission()
+		permission = result
+	}
 </script>
